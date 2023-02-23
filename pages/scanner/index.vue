@@ -157,7 +157,7 @@ export default {
       this.maxPredictions = this.model.getTotalClasses();
       
       const flip = this.$vuetify.breakpoint.xs ? false : true; // whether to flip the webcam
-      this.webcam = new tmPose.Webcam(500, 500); // width, height, flip
+      this.webcam = new tmPose.Webcam(500, 500,true); // width, height, flip
       
       await this.webcam.setup({facingMode: "environment"}); // request access to the webcam
       await this.webcam.play();

@@ -43,7 +43,7 @@
       </v-btn>
     </v-app-bar>
     <!-- is not logged in yet -->
-    <v-app-bar color="white" v-if="true" :clipped-left="clipped" fixed app>
+    <v-app-bar color="white" v-if="false" :clipped-left="clipped" fixed app>
       <div align="start">
         <v-img
           class="pointer"
