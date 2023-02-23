@@ -25,7 +25,7 @@
           <!-- <v-btn depressed color="secondary" dark @click="scan">
             Upload
           </v-btn> -->
-          <v-btn depressed color="secondary" dark @click="init"> Scan4 j</v-btn>
+          <v-btn depressed color="secondary" dark @click="init"> Scan4 hbj</v-btn>
           <!-- <v-btn depressed color="secondary" @click="$refs.file.click()">
             Upload
           </v-btn> -->
@@ -157,7 +157,7 @@ export default {
       this.maxPredictions = this.model.getTotalClasses();
       
       const flip = this.$vuetify.breakpoint.xs ? false : true; // whether to flip the webcam
-      this.webcam = new tmPose.Webcam(400, 400,'back',false); // width, height, flip
+      this.webcam = new tmPose.Webcam(400, 400,'back',true); // width, height, flip
       
       await this.webcam.setup({facingMode: "environment"}); // request access to the webcam
       await this.webcam.play();
