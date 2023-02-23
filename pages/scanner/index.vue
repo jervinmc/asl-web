@@ -1,5 +1,7 @@
 <template>
   <div :class="$vuetify.breakpoint.xs ? ' pt-7' : 'pa-16'">
+    <div><canvas id="canvas"></canvas></div>
+    {{ detected }}
     <v-row class="px-10">
       <v-col
         cols="12"
@@ -74,6 +76,7 @@
               This plant is healthy, keep up the good work! Please continue taking good care of your plant.
             </div>
     </div>
+    
     <div  v-if="!(detectedImage=='Peach Healthy' || detectedImage=='Corn Healthy' || detectedImage=='Strawberry Healthy' || detectedImage=='Tomato Healthy' || detectedImage=='Grape Healthy' || detectedImage=='Pepper Bell Healthy' || detectedImage=='Potato Healthy' || detectedImage=='Squash Healthy')">
          <div align="center" v-if="isView">
       <!-- <v-btn @click="recommendation" outlined>View Recommendation</v-btn> -->
@@ -112,6 +115,7 @@ export default {
       isUpload: false,
       detected: "",
       isView: false,
+      ctx:'',
       url: "",
       urls: "",
       modelUrl: "",
@@ -140,10 +144,10 @@ export default {
     },
     async init() {
       alert("Rendering the camera...");
-      this.url = "https://teachablemachine.withgoogle.com/models/T3jKVtZRz/";
+      this.url = "https://teachablemachine.withgoogle.com/models/nauaiT-Ax/";
       this.modelUrl = this.url + "model.json";
       this.metadataUrl = this.url + "metadata.json";
-
+      const size = 500;
       // load the model and metadata
       // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
       // or files from your local hard drive
@@ -158,6 +162,14 @@ export default {
       await this.webcam.setup({facingMode: "environment"}); // request access to the webcam
       await this.webcam.play();
       window.requestAnimationFrame(this.loop);
+      const canvas = document.getElementById("canvas");
+      this.ctx = canvas.getContext("2d");
+        this.labelContainer = document.getElementById("label-container");
+      
+        canvas.width = size; canvas.height = size;
+        for (let i = 0; i < this.maxPredictions; i++) { // and class labels
+            this.labelContainer.appendChild(document.createElement("div"));
+        }
       this.isView = true;
 
       // append elements to the DOM
@@ -183,10 +195,15 @@ export default {
       const prediction = await this.model.predict(posenetOutput);
 
       for (let i = 0; i < this.maxPredictions; i++) {
-            const classPrediction =
-                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-            this.labelContainer.childNodes[i].innerHTML = classPrediction;
+        if (prediction[i].probability.toFixed(2) * 100 > 80) {
+          const classPrediction = prediction[i].className;
+          // + ": " + (prediction[i].probability.toFixed(2)*100
+          // labelContainer.childNodes[i].innerHTML = classPrediction;
+
+          this.detected = classPrediction;
         }
+        }
+        this.drawPose(pose);
       //  let model = await tmImage.load(modelURL, metadataURL);
       // console.log(this.webcam.canvas);
       // const prediction = await this.model.predict(this.webcam.canvas);
@@ -199,6 +216,17 @@ export default {
       //     this.detected = classPrediction;
       //   }
       // }
+    },
+    drawPose(pose) {
+        if (this.webcam.canvas) {
+            this.ctx.drawImage(this.webcam.canvas, 0, 0);
+            // draw the keypoints and skeleton
+            if (pose) {
+                const minPartConfidence = 0.5;
+                tmPose.drawKeypoints(pose.keypoints, minPartConfidence, this.ctx);
+                tmPose.drawSkeleton(pose.keypoints, minPartConfidence, this.ctx);
+            }
+        }
     },
     async predictImage() {
       this.url = "https://teachablemachine.withgoogle.com/models/gEWbo6qt0/";
@@ -250,12 +278,12 @@ export default {
   },
   drawPose(pose) {
         if (webcam.canvas) {
-            ctx.drawImage(webcam.canvas, 0, 0);
+            this.ctx.drawImage(webcam.canvas, 0, 0);
             // draw the keypoints and skeleton
             if (pose) {
                 const minPartConfidence = 0.5;
-                tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
-                tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
+                tmPose.drawKeypoints(pose.keypoints, minPartConfidence, this.ctx);
+                tmPose.drawSkeleton(pose.keypoints, minPartConfidence, this.ctx);
             }
         }
     }
