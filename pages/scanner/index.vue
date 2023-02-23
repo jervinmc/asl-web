@@ -147,7 +147,7 @@ export default {
       this.url = "https://teachablemachine.withgoogle.com/models/nauaiT-Ax/";
       this.modelUrl = this.url + "model.json";
       this.metadataUrl = this.url + "metadata.json";
-      const size = 500;
+      const size = 400;
       // load the model and metadata
       // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
       // or files from your local hard drive
@@ -157,7 +157,7 @@ export default {
       this.maxPredictions = this.model.getTotalClasses();
       
       const flip = this.$vuetify.breakpoint.xs ? false : true; // whether to flip the webcam
-      this.webcam = new tmPose.Webcam(500, 500,true); // width, height, flip
+      this.webcam = new tmPose.Webcam(400, 400,false); // width, height, flip
       
       await this.webcam.setup({facingMode: "environment"}); // request access to the webcam
       await this.webcam.play();
